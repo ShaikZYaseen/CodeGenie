@@ -13,12 +13,16 @@ app.use(cors());
 app.post('/projects',authMiddleware, async(req:Request,res:Response) => {
     try {
        const {prompt} = req.body;
-       const userId = req.userId;
+       //@ts-ignore
+       const userId = req.userId!;
        //Add logic to generate name from the prompt
        const description = prompt.split("/n")[0];
        const project = await prismaClient.project.create({
            data: {
-               description
+               description,
+               user: {
+                   connect: { id: userId }
+               }
            }
        }) 
        res.json({projectId:project.id});
@@ -31,9 +35,14 @@ app.post('/projects',authMiddleware, async(req:Request,res:Response) => {
 
 app.get('/projects',authMiddleware, async(req:Request,res:Response) => {
     try {
-        const userId = req.userId;
-        const projects = await prismaClient.project.findMany();
-        res.json(projects);
+        //@ts-ignore
+        const userId = req.userId!;
+        const project = await prismaClient.project.findFirst({
+            where:{
+                userId
+            }
+        });
+        res.json(project);
     } catch (error) {
         console.log(error);
         res.status(500).json({message: "Internal Server Error"});    
