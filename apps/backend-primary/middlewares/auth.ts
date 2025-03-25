@@ -2,7 +2,8 @@ import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
 export function authMiddleware(req: Request, res: Response, next: NextFunction): any {
-    const token = req.headers.authorization;
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader?.split(" ")[1];
     if (!token) {
         return res.status(401).json({ message: "Unauthorized" });
     }
@@ -11,7 +12,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction):
         const decoded = jwt.verify(token, process.env.JWT_PUBLIC_KEY!,{
             algorithms:["RS256"],
         });
-        const userId = (decoded as any).payload.sub;
+        const userId = (decoded as any).sub;
 
         if (!userId) {
             return res.status(401).json({ message: "Unauthorized" });

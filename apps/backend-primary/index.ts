@@ -1,5 +1,5 @@
 import {prismaClient} from "db/client";
-import {redisClient} from "redis/client";
+import {redisClient} from "redis-client/client";
 import { authMiddleware } from "./middlewares/auth";
 
 import express, { type Request, type Response } from "express";
@@ -16,13 +16,12 @@ app.post('/projects',authMiddleware, async(req:Request,res:Response) => {
        //@ts-ignore
        const userId = req.userId!;
        //Add logic to generate name from the prompt
-       const description = prompt.split("/n")[0];
+    //    console.log(prompt);
+       const description = prompt;
        const project = await prismaClient.project.create({
            data: {
                description,
-               user: {
-                   connect: { id: userId }
-               }
+              userId
            }
        }) 
        res.json({projectId:project.id});
@@ -51,8 +50,8 @@ app.get('/projects',authMiddleware, async(req:Request,res:Response) => {
 
 
 
-app.listen(3000, () => {
-    console.log("Server is running on port 3000");
+app.listen(8080, () => {
+    console.log("Server is running on port 8080");
 })
 
 

@@ -58,6 +58,7 @@
         "@clerk/nextjs": "^6.12.9",
         "@radix-ui/react-slot": "^1.1.2",
         "aceternity-ui": "^0.2.2",
+        "axios": "^1.8.4",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "framer-motion": "^12.5.0",
