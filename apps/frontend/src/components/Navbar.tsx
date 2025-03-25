@@ -14,6 +14,7 @@ export default function Navbar() {
   return (
     <div className="w-full fixed top-0 left-0 bg-white flex items-center justify-between z-50 text-black px-6 h-[60px]">
       <TypographyH4 name="CodeGenie">CodeGenie</TypographyH4>
+      <div>
       <SignedOut>
               <SignInButton />
               <SignUpButton />
@@ -21,6 +22,8 @@ export default function Navbar() {
             <SignedIn>
               <UserButton />
             </SignedIn>
+      </div>
+     
     </div>
   );
 }

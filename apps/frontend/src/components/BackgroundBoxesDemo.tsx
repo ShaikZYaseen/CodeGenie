@@ -4,6 +4,7 @@ import { Boxes } from "./ui/background-boxes";
 import { cn } from "@/lib/utils";
 import { Textarea } from "./ui/textarea";
 import { Forward } from "lucide-react";
+import { Button } from "./ui/button";
 
 export function BackgroundBoxesDemo() {
   return (
@@ -17,8 +18,12 @@ export function BackgroundBoxesDemo() {
             </p>
             <p className="text-center text-white text-xl mt-2">Describe your app, let AI do the rest &nbsp;:)</p>
             <div className="w-full flex justify-center items-center mt-8">
+           
             <Textarea placeholder="Create a chess aplication.." className="w-1/2 text-white z-1000" />
+            <Button>
             <Forward color="white" className="ml-4 cursor-pointer hover:text-white"/>
+
+                  </Button>
             {/* <Send className="ml-4 cursor-pointer"/> */}
 
 
