@@ -15,7 +15,7 @@ export function AppSidebar() {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent
           side="left"
-          className="w-64 bg-gray-900 text-white"
+          className="w-64 bg-gray-900 border-none text-white"
           onMouseLeave={() => setOpen(false)}
         >
           <h2 className="text-lg mr-4 p-2 pt-4 text-center font-sans">CodeGenie</h2>

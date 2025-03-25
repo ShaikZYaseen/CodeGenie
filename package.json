@@ -3,7 +3,8 @@
   "devDependencies": {
     "prettier": "^3.5.3",
     "turbo": "^2.4.4",
-    "typescript": "5.8.2"
+    "typescript": "5.8.2",
+    "@types/bun": "latest"
   },
   "engines": {
     "node": ">=18"
@@ -24,5 +25,7 @@
   "dependencies": {
     "@clerk/nextjs": "^6.12.9",
     "swr": "2.0.0"
-  }
+  },
+  "module": "index.ts",
+  "type": "module"
 }
