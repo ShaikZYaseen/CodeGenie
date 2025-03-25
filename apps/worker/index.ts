@@ -2,7 +2,8 @@ import express from "express";
 import cors from "cors";
 import OpenAI from "openai";
 import { prismaClient } from "db/client";
-
+import { ArtifactProcessor } from "./parser";
+import { onFileUpdate, onPromptEnd, onShellCommand } from "./os.ts";
 
 
 
@@ -31,6 +32,50 @@ app.post("/prompt", async(req,res)=>{
             createdAt:"asc"
         }
      });
+
+     const messages: any = allPrompts.map((p) => ({
+        role: p.type === "USER" ? "user" : "assistant",
+        content: p.content,
+      }));
+
+      messages.unshift({
+        role: "system",
+        content: "You are an AI chatbot that answers in a friendly tone.",
+      });
+
+
+    let artifactProcessor = new ArtifactProcessor("",onFileUpdate,onShellCommand);
+    let artifact ="";
+
+      const response = await client.chat.completions.create({
+        model: "gpt-4",
+        messages ,
+        max_tokens: 8000, 
+        stream: true, 
+      })
+      .on('text' ,(text:any) => {
+        artifactProcessor.append(text);
+        artifactProcessor.parse();
+        artifact += text;
+      })
+      .on('finalMessage', async(message:any) => {
+            console.log("done!")
+            await prismaClient.prompt.create({
+                data: {
+                    content: artifact,
+                    projectId,
+                    type :"SYSTEM"
+                }
+            })
+      })
+      .on('error', (error:any) => {
+        console.log("error",error)
+      })
+
+
+
+
+
 
 
 
