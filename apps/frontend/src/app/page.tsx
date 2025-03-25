@@ -1,5 +1,4 @@
 import { BackgroundBoxesDemo } from "@/components/BackgroundBoxesDemo";
-import Hero from "@/components/Hero";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -9,7 +8,6 @@ export default function Home() {
   <div>
     <Navbar/>
     <div className="mt-[60px] w-full h-[100vh] flex items-center justify-center">
-    {/* <Hero/> */}
     <BackgroundBoxesDemo/>
     </div>
 
