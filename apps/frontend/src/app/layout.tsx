@@ -29,16 +29,17 @@ export default function RootLayout({
     <html lang="en">
       <ClerkProvider 
       >
+         <SidebarProvider> 
+
+
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-         <SidebarProvider> 
-
-        <AppSidebar />
-        <SidebarTrigger />
-        </SidebarProvider>
+       
         {children}
       </body>
+      </SidebarProvider>
+
       </ClerkProvider>
     </html>
   );
