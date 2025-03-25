@@ -1,3 +1,4 @@
+import { BackgroundBoxesDemo } from "@/components/BackgroundBoxesDemo";
 import Hero from "@/components/Hero";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
@@ -7,8 +8,9 @@ export default function Home() {
   return (
   <div>
     <Navbar/>
-    <div className="mt-[60px] w-full h-[50vh] flex items-center justify-center">
-    <Hero/>
+    <div className="mt-[60px] w-full h-[100vh] flex items-center justify-center">
+    {/* <Hero/> */}
+    <BackgroundBoxesDemo/>
     </div>
 
   </div>
