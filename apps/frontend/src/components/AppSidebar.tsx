@@ -1,30 +1,28 @@
 "use client";
 
-import { useState } from "react";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { useState } from "react";
+import { TypographyH4 } from "./ui/TypographyH4";
 
 export function AppSidebar() {
   const [open, setOpen] = useState(false);
 
   return (
     <div
-      className="fixed top-0 left-0 h-screen w-4 hover:w-64 transition-all duration-300 ease-in-out bg-transparent"
+      className="fixed left-0 top-0 h-screen w-4 text-black border-none hover:w-6 bg-transparent"
       onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
     >
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="left" className="w-64 bg-white p-4 shadow-lg">
-          <h2 className="text-lg font-semibold">Sidebar Menu</h2>
-          <ul className="mt-4 space-y-2">
-            <li className="text-gray-700 hover:text-black cursor-pointer">
-              Dashboard
-            </li>
-            <li className="text-gray-700 hover:text-black cursor-pointer">
-              Settings
-            </li>
-            <li className="text-gray-700 hover:text-black cursor-pointer">
-              Profile
-            </li>
+        <SheetContent
+          side="left"
+          className="w-64 bg-gray-900 text-white"
+          onMouseLeave={() => setOpen(false)}
+        >
+          <h2 className="text-lg mr-4 p-2 pt-4 text-center font-sans">CodeGenie</h2>
+          <ul className="mt-2 space-y-1">
+            <li className="cursor-pointer pl-4 text-sm py-2 hover:bg-gray-700">Settings</li>
+            <li className="cursor-pointer pl-4 text-sm py-2 hover:bg-gray-700">Dashboard</li>
+            <li className="cursor-pointer pl-4 text-sm py-2 hover:bg-gray-700">Profile</li>
           </ul>
         </SheetContent>
       </Sheet>
