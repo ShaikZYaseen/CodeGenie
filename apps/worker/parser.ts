@@ -55,6 +55,8 @@ export class ArtifactProcessor {
             this.onFileContent(filePath.split("\"")[1], fileContent);
         }
        }
-    } catch(e) {}
+    } catch(e) {
+        console.log("Error parsing artifact:", e);
+    }
     }
 }
