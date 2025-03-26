@@ -8,56 +8,70 @@ function getBaseWorkerDir(type: "NEXTJS" | "REACT_NATIVE") {
     return "/tmp/mobile-app";
 }
 
-
-export async function onFileUpdate(filePath: string, fileContent: string, projectId: string, promptId: string, type: "NEXTJS" | "REACT_NATIVE") {
+export async function onFileUpdate(
+    filePath: string,
+    fileContent: string,
+    projectId: string,
+    promptId: string,
+    type: "NEXTJS" | "REACT_NATIVE"
+) {
     await prismaClient.action.create({
         data: {
             projectId,
             promptId,
-            content: `Updated file ${filePath}`
+            content: `Updated file ${filePath}`,
         },
     });
 
-    RelayWebsocket.getInstance().send(JSON.stringify({
-        event: "admin",
-        data: {
-            type: "update-file",
-            content: fileContent,
-            path: `${getBaseWorkerDir(type)}/${filePath}`
-        }
-    }))
+    const ws = RelayWebsocket.getInstance();
+    ws.send(
+        JSON.stringify({
+            event: "admin",
+            data: {
+                type: "update-file",
+                content: fileContent,
+                path: `${getBaseWorkerDir(type)}/${filePath}`,
+            },
+        })
+    );
 }
 
 export async function onShellCommand(shellCommand: string, projectId: string, promptId: string) {
-    //npm run build && npm run start
     const commands = shellCommand.split("&&");
-    for (const command of commands) {
-        console.log(`Running command: ${command}`);
+    const ws = RelayWebsocket.getInstance();
 
-        ws.send(JSON.stringify({
-            event: "admin",
-            data: {
-                type: "command",
-                content: command
-            }
-        }))
+    for (const command of commands) {
+        const trimmedCommand = command.trim();
+        console.log(`Running command: ${trimmedCommand}`);
+
+        ws.send(
+            JSON.stringify({
+                event: "admin",
+                data: {
+                    type: "command",
+                    content: trimmedCommand,
+                },
+            })
+        );
 
         await prismaClient.action.create({
             data: {
                 projectId,
                 promptId,
-                content: `Ran command: ${command}`,
+                content: `Ran command: ${trimmedCommand}`,
             },
         });
     }
 }
 
-
 export function onPromptEnd(promptId: string) {
-    ws.send(JSON.stringify({
-        event: "admin",
-        data: {
-            type: "prompt-end"
-        }
-    }))
+    const ws = RelayWebsocket.getInstance();
+    ws.send(
+        JSON.stringify({
+            event: "admin",
+            data: {
+                type: "prompt-end",
+            },
+        })
+    );
 }
