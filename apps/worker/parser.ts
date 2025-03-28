@@ -21,21 +21,29 @@ export class ArtifactProcessor {
 
     parse() {
         try {
-            const actionRegex = /<boltAction type="(.*?)"(?: filePath="(.*?)")?>([\s\S]*?)<\/boltAction>/;
-            const match = this.currentArtifact.match(actionRegex);
+            const actionRegex = /<boltAction\s+type="(.*?)"(?:\s+filePath="(.*?)")?>([\s\S]*?)<\/boltAction>/g;
 
-            if (!match) return;
+            let match;
+            while ((match = actionRegex.exec(this.currentArtifact)) !== null) {
+                const [, actionType, filePath, actionContent] = match;
 
-            const [, actionType, filePath, actionContent] = match;
+                try {
+                    if (actionType === "shell") {
+                        console.log(`Executing shell command: ${actionContent.trim()}`);
+                        this.onShellCommand(actionContent.trim());
+                    } else if (actionType === "file" && filePath) {
+                        console.log(`Writing to file: ${filePath}`);
+                        this.onFileContent(filePath, actionContent.trim());
+                    } else {
+                        console.warn(`Unknown action type: ${actionType}`);
+                    }
 
-            if (actionType === "shell") {
-                this.onShellCommand(actionContent.trim());
-            } else if (actionType === "file" && filePath) {
-                this.onFileContent(filePath, actionContent.trim());
+                    // Remove processed action from the artifact
+                    this.currentArtifact = this.currentArtifact.replace(match[0], "").trim();
+                } catch (error) {
+                    console.error(`Error processing action "${actionType}":`, error);
+                }
             }
-
-            // Remove the processed action from currentArtifact
-            this.currentArtifact = this.currentArtifact.replace(match[0], "").trim();
         } catch (e) {
             console.error("Error parsing artifact:", e);
         }
