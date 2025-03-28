@@ -1,77 +1,35 @@
-import { prismaClient } from "db/client";
-import { RelayWebsocket } from "./ws.ts";
+import * as fs from "fs";
+import path from "path";
 
-function getBaseWorkerDir(type: "NEXTJS" | "REACT_NATIVE") {
-    if (type === "NEXTJS") {
-        return "/tmp/next-app";
-    }
-    return "/tmp/mobile-app";
+const BASE_WORKER_DIR = path.join(process.cwd(),"../code-server/tmp","bolty-worker");
+
+// Ensure directory exists
+if (!fs.existsSync(BASE_WORKER_DIR)) {
+    fs.mkdirSync(BASE_WORKER_DIR, { recursive: true });
 }
 
-export async function onFileUpdate(
-    filePath: string,
-    fileContent: string,
-    projectId: string,
-    promptId: string,
-    type: "NEXTJS" | "REACT_NATIVE"
-) {
-    await prismaClient.action.create({
-        data: {
-            projectId,
-            promptId,
-            content: `Updated file ${filePath}`,
-        },
+export async function onFileUpdate(filePath: string, fileContent: string) {
+    console.log(`writing file: ${filePath}`);
+    console.log("basedir", BASE_WORKER_DIR);
+    await Bun.write(`${BASE_WORKER_DIR}/${filePath}`, fileContent);
+}
+
+export async function onShellCommand(shellCommand: string) {
+    console.log(`Executing shell command: ${shellCommand}`);
+    console.log(`Working directory: ${BASE_WORKER_DIR}`);
+
+    const isWindows = process.platform === "win32"; // Detect Windows
+    let cmd = isWindows 
+        ? ["cmd.exe", "/c", shellCommand]   // Use Windows Command Prompt
+        : ["sh", "-c", shellCommand];      // Use Unix Shell
+
+    const result = Bun.spawnSync({
+        cmd,
+        cwd: BASE_WORKER_DIR,
+        stdout: "pipe",
+        stderr: "pipe",
     });
 
-    const ws = RelayWebsocket.getInstance();
-    ws.send(
-        JSON.stringify({
-            event: "admin",
-            data: {
-                type: "update-file",
-                content: fileContent,
-                path: `${getBaseWorkerDir(type)}/${filePath}`,
-            },
-        })
-    );
-}
-
-export async function onShellCommand(shellCommand: string, projectId: string, promptId: string) {
-    const commands = shellCommand.split("&&");
-    const ws = RelayWebsocket.getInstance();
-
-    for (const command of commands) {
-        const trimmedCommand = command.trim();
-        console.log(`Running command: ${trimmedCommand}`);
-
-        ws.send(
-            JSON.stringify({
-                event: "admin",
-                data: {
-                    type: "command",
-                    content: trimmedCommand,
-                },
-            })
-        );
-
-        await prismaClient.action.create({
-            data: {
-                projectId,
-                promptId,
-                content: `Ran command: ${trimmedCommand}`,
-            },
-        });
-    }
-}
-
-export function onPromptEnd(promptId: string) {
-    const ws = RelayWebsocket.getInstance();
-    ws.send(
-        JSON.stringify({
-            event: "admin",
-            data: {
-                type: "prompt-end",
-            },
-        })
-    );
+    console.log(result.stdout.toString());
+    console.error(result.stderr.toString());
 }

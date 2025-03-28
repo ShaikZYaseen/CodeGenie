@@ -3,7 +3,7 @@ import cors from "cors";
 import OpenAI from "openai";
 import { prismaClient } from "db/client";
 import { ArtifactProcessor } from "./parser";
-import { onFileUpdate, onPromptEnd, onShellCommand } from "./os.ts";
+import { onFileUpdate, onShellCommand } from "./os.ts";
 import { systemPrompt } from "./SystemPromptTemplate.tsx";
 
 const app = express();
@@ -44,8 +44,8 @@ app.post("/prompt", async (req, res) => {
       // Initialize the ArtifactProcessor
       let artifactProcessor = new ArtifactProcessor(
           "",
-          (filePath, fileContent) => onFileUpdate(filePath, fileContent, projectId, "", "NEXTJS"),
-          (shellCommand) => onShellCommand(shellCommand, projectId, "")
+          (filePath, fileContent) => onFileUpdate(filePath, fileContent),
+          (shellCommand) => onShellCommand(shellCommand)
       );
       let artifact = "";
 
@@ -56,20 +56,17 @@ app.post("/prompt", async (req, res) => {
           stream: true,
       });
 
-      console.log("🔹 Streaming response started...");
 
       const decoder = new TextDecoder();
       for await (const chunk of response) {
           // ✅ Extracting text properly
           const text = chunk.choices[0]?.delta?.content || "";  
-          console.log("Received chunk:", text);
 
           artifactProcessor.append(text);
           artifactProcessor.parse();
           artifact += text;
       }
 
-      console.log("🔹 Final artifact:", artifact);
 
       // Save the final artifact to the database
       await prismaClient.prompt.create({
