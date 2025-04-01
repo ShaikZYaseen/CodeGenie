@@ -33,6 +33,7 @@ export class ArtifactProcessor {
                         this.onShellCommand(actionContent.trim());
                     } else if (actionType === "file" && filePath) {
                         console.log(`Writing to file: ${filePath}`);
+                        console.log(actionContent?.trim())
                         this.onFileContent(filePath, actionContent.trim());
                     } else {
                         console.warn(`Unknown action type: ${actionType}`);

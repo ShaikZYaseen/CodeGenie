@@ -10,4 +10,5 @@ RUN apt-get update \
 
 USER coder
 EXPOSE 8080
-CMD ["code-server","--auth","none","--bind-addr","0.0.0.0:8080","/tmp/bolty-worker"]
+EXPOSE 5173
+CMD ["code-server","--auth","none","--bind-addr","0.0.0.0:8080","0.0.0.0:5173","/tmp/bolty-worker"]
